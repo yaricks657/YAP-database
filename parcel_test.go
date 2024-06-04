@@ -33,10 +33,9 @@ func getTestParcel() Parcel {
 func TestAddGetDelete(t *testing.T) {
 	// prepare
 	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
-	if err != nil {
-		require.NoError(t, err)
-		return
-	}
+
+	require.NoError(t, err)
+
 	defer db.Close()
 
 	// подготовка входных данных
@@ -62,22 +61,20 @@ func TestAddGetDelete(t *testing.T) {
 	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что посылку больше нельзя получить из БД
-	err = store.Delete(parcel.Number)
+	err = store.Delete(res)
 
 	require.NoError(t, err)
 	element, err := store.Get(res)
-	require.NoError(t, err)
-	assert.NotEmpty(t, element)
+	assert.Empty(t, element)
+	assert.NotEmpty(t, err)
 }
 
 // TestSetAddress проверяет обновление адреса
 func TestSetAddress(t *testing.T) {
 	// prepare
 	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
-	if err != nil {
-		require.NoError(t, err)
-		return
-	}
+	require.NoError(t, err)
+
 	defer db.Close()
 
 	// подготовка входных данных
@@ -108,10 +105,8 @@ func TestSetAddress(t *testing.T) {
 func TestSetStatus(t *testing.T) {
 	// prepare
 	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
-	if err != nil {
-		require.NoError(t, err)
-		return
-	}
+	require.NoError(t, err)
+
 	defer db.Close()
 
 	// подготовка входных данных
@@ -142,10 +137,9 @@ func TestSetStatus(t *testing.T) {
 func TestGetByClient(t *testing.T) {
 	// prepare
 	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
-	if err != nil {
-		require.NoError(t, err)
-		return
-	}
+
+	require.NoError(t, err)
+
 	defer db.Close()
 
 	parcels := []Parcel{
@@ -187,11 +181,7 @@ func TestGetByClient(t *testing.T) {
 	for _, parcel := range storedParcels {
 		item, exists := parcelMap[parcel.Number]
 
-		require.Equal(t, true, exists)
-		assert.Equal(t, item.Number, parcel.Number)
-		assert.Equal(t, item.Address, parcel.Address)
-		assert.Equal(t, item.Client, parcel.Client)
-		assert.Equal(t, item.CreatedAt, parcel.CreatedAt)
-		assert.Equal(t, item.Status, parcel.Status)
+		require.NotEqual(t, false, exists)
+		assert.Equal(t, item, parcel)
 	}
 }
