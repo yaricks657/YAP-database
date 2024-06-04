@@ -52,11 +52,8 @@ func TestAddGetDelete(t *testing.T) {
 	item, err := store.Get(res)
 
 	require.NoError(t, err)
-	assert.Equal(t, res, item.Number)
-	assert.Equal(t, parcel.Client, item.Client)
-	assert.Equal(t, parcel.Address, item.Address)
-	assert.Equal(t, parcel.CreatedAt, item.CreatedAt)
-	assert.Equal(t, parcel.Status, item.Status)
+	parcel.Number = res
+	require.Equal(t, parcel, item)
 
 	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
@@ -64,9 +61,8 @@ func TestAddGetDelete(t *testing.T) {
 	err = store.Delete(res)
 
 	require.NoError(t, err)
-	element, err := store.Get(res)
-	assert.Empty(t, element)
-	assert.NotEmpty(t, err)
+	_, err = store.Get(res)
+	require.Error(t, err)
 }
 
 // TestSetAddress проверяет обновление адреса
@@ -181,7 +177,7 @@ func TestGetByClient(t *testing.T) {
 	for _, parcel := range storedParcels {
 		item, exists := parcelMap[parcel.Number]
 
-		require.NotEqual(t, false, exists)
+		require.True(t, exists)
 		assert.Equal(t, item, parcel)
 	}
 }
